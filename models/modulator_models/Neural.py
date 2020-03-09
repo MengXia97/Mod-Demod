@@ -98,7 +98,10 @@ class Neural(nn.Module):
     def forward(self, input:torch.Tensor) -> torch.Tensor:
         assert len(input.shape) == 2 #input shape should be [N_symbols, bits_per_symbol]
         assert input.shape[1] == self.bits_per_symbol 
+        # print('input',input)
+
         means = self.base(input)
+        # print('means', means)
         ###################
         # Normalize outputs
         ###################

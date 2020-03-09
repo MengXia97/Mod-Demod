@@ -1,6 +1,7 @@
 import numpy as np
 
-from utils.util_data import add_cartesian_awgn as add_awgn
+import visualize
+from utils.util_data import add_cartesian_awgn as add_awgn, symbols_to_integers
 from utils.util_data import get_grid_2d, get_test_SNR_dbs, integers_to_symbols
 
 
@@ -38,8 +39,11 @@ def roundtrip_evaluate(*,
         B = agent2
     # Calculate Roundtrip Testing Accuracy on different SNRs
     preamble = get_random_preamble(n=test_batch_size, bits_per_symbol=bits_per_symbol)
+
     c_signal_forward = A.mod.modulate(preamble, mode='exploit', dtype='cartesian')
     _c_signal_forward = B.mod.modulate(preamble, mode='exploit', dtype='cartesian')
+    # c_signal_forward = A.mod.modulate(preamble, mode='classic', dtype='cartesian')
+    # _c_signal_forward = B.mod.modulate(preamble, mode='classic', dtype='cartesian')
 
     test_bers = [[], []]
     test_sers = [[], []]
@@ -49,6 +53,8 @@ def roundtrip_evaluate(*,
         c_signal_backward = B.mod.modulate(preamble_halftrip, mode='exploit', dtype='cartesian')
         c_signal_backward_noisy = add_awgn(c_signal_backward, SNR_db=test_SNR_db, signal_power=signal_power)
         preamble_roundtrip = A.demod.demodulate(c_signal_backward_noisy)
+
+
         test_bers[0].append(float(get_ber(preamble, preamble_roundtrip)))
         test_sers[0].append(float(get_ser(preamble, preamble_roundtrip)))
 
@@ -110,7 +116,9 @@ def roundtrip_evaluate(*,
         'test_sers': avg_test_sers,  # mean
         'mod_std_1': agent1.mod.get_std(),
         'constellation_1': agent1.mod.get_constellation(),
+        # 'constellation_1': add_awgn(agent1.mod.get_constellation(), SNR_db=test_SNR_db, signal_power=signal_power),
         'demod_grid_1': agent1.demod.get_demod_grid(grid_2d),
+
         **r2
     }
 

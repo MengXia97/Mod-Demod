@@ -70,7 +70,7 @@ class Classic():
             block_logits = -dist #We give logits here since pytorch loss function applies the softmax
             logits.append(block_logits)
        
-      
+
         logits = torch.cat(logits, dim=0)
         return logits
 

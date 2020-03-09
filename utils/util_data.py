@@ -21,6 +21,9 @@ def get_awgn(N0, n):
     Each entry is i.i.d Gaussian with mean 0 and standard deviation np.sqrt(N0/2)    
     '''
     noise = np.random.normal(0.0, np.sqrt(N0 / 2), [n, 2])
+    # s_ = np.sqrt(N0 / 2)
+    # sigma = [[s_ , 0], [0, s_ ]]
+    # noise = np.random.multivariate_normal([0, 0], sigma, size=n)
     return noise
 
 
@@ -114,6 +117,37 @@ def get_test_SNR_dbs():
         }
     }
     return test_SNR_dbs
+
+#
+# def get_test_SNR_dbs():
+#     test_SNR_dbs = {
+#         1: {
+#             'ber': [13, 13, 13, 13, 13, 13],
+#             'ber_roundtrip': [13, 13, 13, 13, 13, 13],
+#             'ser': [13, 13, 13, 13, 13, 13],
+#             'ser_roundtrip': [13, 13, 13, 13, 13, 13]},
+#         2: {
+#             'ber': [13, 13, 13, 13, 13, 13],
+#             'ber_roundtrip': [13, 13, 13, 13, 13, 13],
+#             'ser': [13, 13, 13, 13, 13, 13],
+#             'ser_roundtrip': [13, 13, 13, 13, 13, 13]},
+#         3: {
+#             'ber': [13, 13, 13, 13, 13, 13],
+#             'ber_roundtrip': [13, 13, 13, 13, 13, 13],
+#             'ser': [13, 13, 13, 13, 13, 13],
+#             'ser_roundtrip': [13, 13, 13, 13, 13, 13]},
+#         4: {
+#             'ber': [13, 13, 13, 13, 13, 13],
+#             'ber_roundtrip': [13, 13, 13, 13, 13, 13],
+#             'ser': [13, 13, 13, 13, 13, 13],
+#             'ser_roundtrip': [13, 13, 13, 13, 13, 13]},
+#         5: {
+#             'ber': [13, 13, 13, 13, 13, 13],
+#             'ber_roundtrip': [13, 13, 13, 13, 13, 13],
+#             'ser': [13, 13, 13, 13, 13, 13],
+#             'ser_roundtrip': [13, 13, 13, 13, 13, 13]},
+#     }
+#     return test_SNR_dbs
 
 
 ##############################################################################
@@ -360,6 +394,7 @@ def symbols_to_integers(data_sb):
     data_si = data_sb[:, 0]
     for i in range(1, data_sb.shape[1]):
         data_si = (data_si << 1) + data_sb[:, i]
+    # print(data_si)
     return data_si
 
 

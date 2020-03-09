@@ -88,4 +88,14 @@ local restrict_energy = 1.0;
         'cross_entropy_weight':     1.0, # iterate over  
     },
 
+    'decisiontree_demod_qpsk':
+    {   'proj_num':     50,
+        'max_depth':    5,
+       },
+
+    'decisiontree_demod_qam16':
+    {   'proj_num':     50,
+        'max_depth':    4,
+       }
+
 }

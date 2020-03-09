@@ -93,9 +93,11 @@ def animated_plot(results_file="/Users/caryn/Desktop/echo/experiments/private_"
         for a, b in pairs:
             m, c = (result['mod_std_%i' % a], result['constellation_%i' % a])
             d = result['demod_grid_%i' % b]
+            # print(result)
             i_means = c[:, 0]
             q_means = c[:, 1]
-            cov = np.eye(2, 2) * m ** 2
+            # print('m',m)
+            # cov = np.eye(2, 2) * m ** 2
             i_std, q_std = m
             minor = np.sqrt(9.210) * q_std
             major = np.sqrt(9.210) * i_std

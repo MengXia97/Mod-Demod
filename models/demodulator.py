@@ -61,9 +61,13 @@ class Demodulator():
             cartesian_points = torch.from_numpy(signal).float()
         elif len(signal.shape) == 1:
             cartesian_points = torch.from_numpy(np.stack((signal.real, signal.imag), axis=-1)).float()
-        logits = self.model.forward(cartesian_points)
-        _, actions = torch.max(logits, 1)  # actions are class indexes
+        if self.model.name == 'dtree':
+            actions = self.model.forward(cartesian_points)
+        else:
+            logits = self.model.forward(cartesian_points)
+            _, actions = torch.max(logits, 1)  # actions are class indexes
         symbols = self.integers_to_symbols_map[actions.detach().numpy().astype(int)]
+            # print('symbols',symbols)
         return symbols
 
     # input cartesian torch.Tensor
@@ -74,11 +78,12 @@ class Demodulator():
         return logits
 
     # input cartesian/complex np.ndarray, bit symbols np.ndarray
-    def update(self, signal: np.ndarray, true_symbols: np.ndarray, **kwargs):
+    def update(self, signal: np.ndarray, true_symbols: np.ndarray, times, **kwargs):
         model = self.model
         if hasattr(model, "update"):
             kwargs['signal'] = signal
             kwargs['true_symbols'] = true_symbols
+            kwargs['times'] = times
             model.update(**kwargs)
             return
         else:
@@ -105,6 +110,42 @@ class Demodulator():
                 loss.backward()
                 optimizer.step()
             return
+
+    # def update(self, signal: np.ndarray, true_symbols: np.ndarray, **kwargs):
+    #     model = self.model
+    #     if hasattr(model, "update"):
+    #         kwargs['signal'] = signal
+    #         kwargs['true_symbols'] = true_symbols
+    #         model.update(**kwargs)
+    #         return
+    #     else:
+    #         assert self.optimizer, "Demodulator is not initialized with an optimizer"
+    #         # train
+    #         if len(signal.shape) == 2:
+    #             cartesian_points = torch.from_numpy(signal).float()
+    #         elif len(signal.shape) == 1:
+    #             cartesian_points = torch.from_numpy(
+    #                 np.stack((signal.real.astype(np.float32), signal.imag.astype(np.float32)), axis=-1))
+    #         l1, l2, cross_entropy_weight, optimizer = [self.lambda_l1, self.lambda_l2,
+    #                                                    self.cross_entropy_weight, self.optimizer]
+    #         criterion = nn.CrossEntropyLoss()
+    #         for _ in range(self.epochs):
+    #             logits = model.forward(cartesian_points)
+    #             target = torch.from_numpy(symbols_to_integers(true_symbols))
+    #             loss = cross_entropy_weight * torch.mean(criterion(logits, target))
+    #             if l1 > 0:
+    #                 loss += l1 * model.l1_loss()
+    #             if l2 > 0:
+    #                 loss += l2 * model.l2_loss()
+    #             # Backprop
+    #             optimizer.zero_grad()
+    #             loss.backward()
+    #             optimizer.step()
+    #         return
+    #
+    #
+    #
+    #
 
     # input cartesian/complex np.ndarray
     # output class (int) np.ndarray

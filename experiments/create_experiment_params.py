@@ -43,7 +43,8 @@ default_num_iterations = {
 }
 
 all_SNR_dbs = {
-    'QPSK': [13.0, 8.4, 4.2],
+    # 'QPSK': [13.0, 8.4, 4.2],
+    'QPSK': [20.0, 15.0, 13.0],
     '8PSK': [18.2, 13.2, 8.4],
     'QAM16': [20.0, 15.0, 10.4]
 };
@@ -255,11 +256,11 @@ def main(argv):
 
     requiredNamed.add_argument("--mod1", choices=['classic', 'neural', 'poly'], required=True)
 
-    importantNamed.add_argument("--demod1", choices=['classic', 'neural', 'poly'],
+    importantNamed.add_argument("--demod1", choices=['classic', 'neural', 'poly','decisiontree'],
                                 help="Optional, (defaults to --mod1)")
     importantNamed.add_argument("--mod2", choices=['classic', 'neural', 'poly', 'clone', 'selfalien'],
                                 help="Optional, (defaults to None)")
-    importantNamed.add_argument("--demod2", choices=['classic', 'neural', 'poly', 'clone', 'selfalien'],
+    importantNamed.add_argument("--demod2", choices=['classic', 'neural', 'poly', 'clone', 'selfalien','decisiontree'],
                                 help="Optional, (defaults to --mod2)")
 
     importantNamed.add_argument("--num_trials", type=int, default=5, help='(default: %(default)s)')

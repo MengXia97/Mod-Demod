@@ -37,12 +37,15 @@ def train(*,
 
         preamble = get_random_preamble(batch_size, bits_per_symbol)
         ##MODULATE/action
+        # print('preamble', preamble)
         c_signal_forward = A.mod.modulate(preamble, mode='explore', dtype='complex')
+        # print('preamble', c_signal_forward)
+
         actions = c_signal_forward
         ##CHANNEL
         c_signal_forward_noisy = add_awgn(c_signal_forward, SNR_db=train_SNR_db, signal_power=signal_power)
         ##DEMODULATE/update and pass loss to mod
-        A.demod.update(c_signal_forward_noisy, preamble)
+        A.demod.update(c_signal_forward_noisy, preamble, i)
         preamble_halftrip = A.demod.demodulate(c_signal_forward_noisy)
         A.mod.update(preamble, actions, preamble_halftrip)
         batches_sent += 1
