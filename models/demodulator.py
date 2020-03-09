@@ -56,13 +56,13 @@ class Demodulator():
 
     # input cartesian/complex np.ndarray
     # output bit symbols np.ndarray
-    def demodulate(self, signal: np.ndarray) -> np.ndarray:
+    def demodulate(self, signal: np.ndarray, preamble=None) -> np.ndarray:
         if len(signal.shape) == 2:
             cartesian_points = torch.from_numpy(signal).float()
         elif len(signal.shape) == 1:
             cartesian_points = torch.from_numpy(np.stack((signal.real, signal.imag), axis=-1)).float()
         if self.model.name == 'dtree':
-            actions = self.model.forward(cartesian_points)
+            actions = self.model.forward(cartesian_points,preamble)
         else:
             logits = self.model.forward(cartesian_points)
             _, actions = torch.max(logits, 1)  # actions are class indexes
@@ -78,12 +78,11 @@ class Demodulator():
         return logits
 
     # input cartesian/complex np.ndarray, bit symbols np.ndarray
-    def update(self, signal: np.ndarray, true_symbols: np.ndarray, times, **kwargs):
+    def update(self, signal: np.ndarray, true_symbols: np.ndarray, **kwargs):
         model = self.model
         if hasattr(model, "update"):
             kwargs['signal'] = signal
             kwargs['true_symbols'] = true_symbols
-            kwargs['times'] = times
             model.update(**kwargs)
             return
         else:

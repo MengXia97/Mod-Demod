@@ -1,8 +1,9 @@
 ###LOSS PASSING###
 import numpy as np
 
+import visualize
 from protocols.roundtrip_evaluate import roundtrip_evaluate as evaluate
-from utils.util_data import integers_to_symbols, add_complex_awgn as add_awgn
+from utils.util_data import integers_to_symbols, add_complex_awgn as add_awgn, symbols_to_integers
 from utils.util_lookup_table import BER_lookup_table
 
 
@@ -34,19 +35,22 @@ def train(*,
     batches_sent = 0
     results = []
     for i in range(num_iterations):
-
+#the beginning of the system: we generate the sysmbol randomly
         preamble = get_random_preamble(batch_size, bits_per_symbol)
         ##MODULATE/action
-        # print('preamble', preamble)
-        c_signal_forward = A.mod.modulate(preamble, mode='explore', dtype='complex')
-        # print('preamble', c_signal_forward)
-
+        # c_signal_forward = A.mod.modulate(preamble, mode='explore', dtype='complex')
+        c_signal_forward = A.mod.modulate(preamble, dtype='complex', mode='classic')
         actions = c_signal_forward
         ##CHANNEL
         c_signal_forward_noisy = add_awgn(c_signal_forward, SNR_db=train_SNR_db, signal_power=signal_power)
+        # print('X_train', c_signal_forward_noisy)
+        # print('y_train', preamble)
+
         ##DEMODULATE/update and pass loss to mod
-        A.demod.update(c_signal_forward_noisy, preamble, i)
+        A.demod.update(c_signal_forward_noisy, preamble)
         preamble_halftrip = A.demod.demodulate(c_signal_forward_noisy)
+        # acc_test = sum(preamble[i]==preamble_halftrip[i] for i in range(len(preamble)))/len(preamble)
+        # print('iter:',i,'acc:',acc_test)
         A.mod.update(preamble, actions, preamble_halftrip)
         batches_sent += 1
 
@@ -79,6 +83,9 @@ def train(*,
                 print("Early Stopping dBs off: %d" % early_stopping_db_off)
                 early_stop = True
                 break
+
+    # visualize.visualize_constellation(data=c_signal_forward_noisy, labels=list(symbols_to_integers(preamble_halftrip)))
+
     info = {
         'bits_per_symbol': bits_per_symbol,
         'train_SNR_db': train_SNR_db,

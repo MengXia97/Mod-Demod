@@ -15,7 +15,7 @@ class Modulator():
                  optimizer: Optional[str] = 'adam',
                  stepsize_mu: float = 0.0,
                  stepsize_sigma: float = 0.0,
-                 initial_std: float = 0.1,
+                 initial_std: float = 0.35,
                  min_std: float = 1e-5,
                  max_std: float = 1e2,
                  lambda_baseline: float = 0.0,  # used in update method
@@ -194,10 +194,12 @@ class Modulator():
         return -np.average(reward)
 
     def get_std(self):
-        if hasattr(self.model, 'mu_parameters'):
-            return self.log_std.exp().data.detach().numpy()
-        else:
-            return [0.0, 0.0]
+        return self.log_std.exp().data.detach().numpy()
+        # if hasattr(self.model, 'mu_parameters'):
+        #     return self.log_std.exp().data.detach().numpy()
+        # else:
+        #     # return [0.0 , 0.0]
+        #     return [0.2, 0.2]
 
     def get_constellation(self):
         all_unique_symbols = self.all_symbols
