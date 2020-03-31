@@ -15,7 +15,8 @@ class Modulator():
                  optimizer: Optional[str] = 'adam',
                  stepsize_mu: float = 0.0,
                  stepsize_sigma: float = 0.0,
-                 initial_std: float = 0.1,
+                 initial_std: float = 0.4,
+                 # initial_std: float = 0.1,
                  min_std: float = 1e-5,
                  max_std: float = 1e2,
                  lambda_baseline: float = 0.0,  # used in update method

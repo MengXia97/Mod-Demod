@@ -11,7 +11,7 @@ class Neural(nn.Module):
     def __init__(self, *, 
                  bits_per_symbol:Union[float,int],
                  hidden_layers:List[int] = [50],
-                 restrict_energy:Union[float,int] = 1, #0,1,2
+                 restrict_energy:Union[float,int] = 2, #0,1,2
                  activation_fn_hidden:str = 'tanh',
                  activation_fn_output:Optional[str] = None,
                  max_amplitude:float = 0.0,

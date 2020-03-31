@@ -72,6 +72,7 @@ def animated_plot(results_file="/Users/caryn/Desktop/echo/experiments/private_"
     # plt.show()
     if results is None:
         results = np.load(open(results_file, 'rb'), allow_pickle=True)
+
     meta, results = results[0], results[1:]
     num_agents = meta['num_agents']
     bits_per_symbol = meta['bits_per_symbol']
@@ -88,7 +89,12 @@ def animated_plot(results_file="/Users/caryn/Desktop/echo/experiments/private_"
         pairs = [(1, 1)]
         fig, axes = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True, figsize=(8, 4))
         axes_list = [item for item in axes]
+
+    sum_ber, count = 0, 0
     for result in results:
+        test_ber = result['test_bers']
+        # sum_ber += sum(result['test_bers']) / len(result['test_bers'])
+        # count += 1
         _a_ = 0
         for a, b in pairs:
             m, c = (result['mod_std_%i' % a], result['constellation_%i' % a])
@@ -127,6 +133,11 @@ def animated_plot(results_file="/Users/caryn/Desktop/echo/experiments/private_"
         for ax in axes_list:
             ax.clear()
     fig.canvas.draw()
+    # use last time test_ber results.
+    avg_ber = sum(test_ber) / len(test_ber)
+    print('test_ber: ', avg_ber)
+    # avg_ber = sum_ber / count
+    # print('avg_ber: ', avg_ber)
 
     plt.ioff()
     plt.close(fig)

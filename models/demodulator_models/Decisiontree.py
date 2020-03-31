@@ -7,7 +7,7 @@ import math
 import numpy as np
 import torch
 from collections import deque
-
+from sklearn.utils import shuffle
 from utils import util_modulation
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.datasets import make_classification
@@ -74,12 +74,27 @@ class Decisiontree():
         if times == 0:
             self.X_train = X
             self.y_train = y
-        elif times <= 25:
+        elif times <= 22:
             self.X_train = np.vstack((self.X_train, X))
             self.y_train = np.append(self.y_train, y)
         else:
-            self.X_train = np.vstack((self.X_train[signal.shape[0]:, :], X))
-            self.y_train = np.append(self.y_train[signal.shape[0]:], y)
+            # delete the head of the existing data
+            # self.X_train = np.vstack((self.X_train[signal.shape[0]:, :], X))
+            # self.y_train = np.append(self.y_train[signal.shape[0]:], y)
+
+            # delete the random rows of the existing data
+            row = self.X_train.shape[0]
+            row_added = X.shape[0]
+            delete_row = random.sample(range(0, row), row_added)
+            self.X_train = np.delete(self.X_train, delete_row, axis=0)
+            self.y_train = np.delete(self.y_train, delete_row)
+            # add the new data
+            self.X_train = np.vstack((self.X_train, X))
+            self.y_train = np.append(self.y_train, y)
+            # shuffle
+            self.X_train, self.y_train = shuffle(self.X_train, self.y_train, random_state=0)
+
+
 
         X_ = self.X_train
         for i in range(self.proj_num):
